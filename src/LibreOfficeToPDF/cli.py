@@ -25,8 +25,8 @@ print("script path: {}".format(script))
 
 @click.command()
 @click.argument('source')
-@click.option('--update_and_save', is_flag=True, default=True, help='Update indexes (e.g. Table of Contents) on the source file and save.')
-@click.option('--pdf', is_flag=True, default=True, help='Save a PDF file with same name as source.')
+@click.option('--update_and_save', is_flag=True, default=True, help='Update indexes (e.g. Table of Contents) on the source file and save. (True or False)')
+@click.option('--pdf', is_flag=True, default=True, help='Save a PDF file with same name as source. (True or False)')
 def main(source, update_and_save, pdf):
     """source: Path (relative or absolute) to docx file."""
     if not os.path.isabs(source):

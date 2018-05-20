@@ -27,5 +27,8 @@ If your python and scripts folder are in path, then you can access from the comm
 Typical usage (opens file, updates indexes, saves, generates pdf):
 ``LibreOfficeToPDF C:\Users\john\file.docx``
 
+Only update indexes and save:
+``LibreOfficeToPDF --no-pdf C:\Users\john\file.docx``
+
 For more options see:
 ``LibreOfficeToPDF --help``

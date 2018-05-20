@@ -142,7 +142,7 @@ def oo_shutdown_if_running(port=OPENOFFICE_PORT):
         pass
 
 
-def run(source, update_and_save=True, pdf=True):
+def run(source, update, pdf):
     fileUrl = uno.systemPathToFileUrl(os.path.realpath(source))
     filepath, ext = os.path.splitext(source)
     fileUrlPDF = uno.systemPathToFileUrl(os.path.realpath(filepath+".pdf"))
@@ -155,7 +155,7 @@ def run(source, update_and_save=True, pdf=True):
     document = desktop.loadComponentFromURL(fileUrl, "_default", 0, ())
     doc = desktop.getCurrentComponent().getCurrentController()
 
-    if update_and_save:
+    if update:
         print("Updating Indexes and Saving")
         dispatcher.executeDispatch(doc, ".uno:UpdateAllIndexes", "", 0, ())
         struct = uno.createUnoStruct('com.sun.star.beans.PropertyValue')
@@ -177,20 +177,27 @@ def run(source, update_and_save=True, pdf=True):
 
 
 def main():
+
     try:
         source = sys.argv[1]
     except IndexError:
         print("Mising document path.")
         return
+
     try:
-        update_and_save = bool(sys.argv[2])
+        update = True if sys.argv[2] == "True" else False
     except IndexError:
-        update_and_save = True
+        print("Mising update option.")
+        return
+
     try:
-        pdf = bool(sys.argv[3])
+        pdf = True if sys.argv[3] == "True" else False
     except IndexError:
-        pdf = True
-    run(source, update_and_save, pdf)
+        print("Mising pdf option.")
+        return
+
+    run(source, update, pdf)
+
 
 if __name__ == "__main__":
     main()

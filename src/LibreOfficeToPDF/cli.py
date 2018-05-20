@@ -25,14 +25,16 @@ print("script path: {}".format(script))
 
 @click.command()
 @click.argument('source')
-@click.option('--update_and_save', is_flag=True, default=True, help='Update indexes (e.g. Table of Contents) on the source file and save. (True or False)')
-@click.option('--pdf', is_flag=True, default=True, help='Save a PDF file with same name as source. (True or False)')
-def main(source, update_and_save, pdf):
+@click.option('--update/--no-update', default=True, help='Update indexes (e.g. Table of Contents) on the source file and save it.')
+@click.option('--pdf/--no-pdf', default=True, help='Generate a PDF file with same name as source.')
+def main(source, update, pdf):
     """source: Path (relative or absolute) to docx file."""
     if not os.path.isabs(source):
         source = os.path.join(cwd, source)
+    print("Update: {}".format(update))
+    print("Create PDF: {}".format(pdf))
     print("Calling LibreOffice python\n")
-    print(check_output(["{}".format(OPENOFFICE_PYTHON), script, source], shell=True).decode())
+    print(check_output(["{}".format(OPENOFFICE_PYTHON), script, source, str(update), str(pdf)], shell=True).decode())
 
 if __name__ == "__main__":
     main()

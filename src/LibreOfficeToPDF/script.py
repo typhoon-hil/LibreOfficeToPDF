@@ -83,16 +83,16 @@ class OORunner:
         """
         print("Starting headless LibreOffice")
         args = [
-                '-accept=socket,host=localhost,port=%d;urp;' % self.port,
-                '-norestore',
-                '-nofirststartwizard',
-                '-nologo',
-                '-headless',
+                '--norestore',
+                '--nofirststartwizard',
+                '--nologo',
+                '--headless',
+                '--invisible',
+                '--accept=socket,host=localhost,port=%d;urp;' % self.port,
                 ]
 
         try:
-            #pid = os.spawnve(os.P_NOWAIT, args[0], args)
-            pid = subprocess.Popen([OPENOFFICE_BIN, args]).pid
+            pid = subprocess.Popen([OPENOFFICE_BIN, *args]).pid
         except Exception as e:
             raise Exception("Failed to start OpenOffice on port %d: %s" % (self.port, e.message))
 
@@ -152,8 +152,12 @@ def run(source, update, pdf):
     desktop, dispatcher = runner.connect()
 
     print("Loading document")
-    document = desktop.loadComponentFromURL(fileUrl, "_default", 0, ())
-    doc = desktop.getCurrentComponent().getCurrentController()
+    struct = uno.createUnoStruct('com.sun.star.beans.PropertyValue')
+    struct.Name = 'Hidden'
+    struct.Value = True
+    document = desktop.loadComponentFromURL(fileUrl, "_default", 0, ([struct]))
+    doc = document.getCurrentController()
+    #doc = desktop.getCurrentComponent().getCurrentController()
 
     if update:
         print("Updating Indexes and Saving")

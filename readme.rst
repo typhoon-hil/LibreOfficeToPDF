@@ -7,7 +7,7 @@ This is a very simple utility that uses LibreOffice to do two things:
 
 So far tested only in Windows 10 using Python 3.6, but it should work on other platforms and Python versions as well. Users are more than welcome to test it.
 
-Also not tested for other text files formats. It might work.
+Also not tested for other text file formats. It might work.
 
 .. _python-docx: https://github.com/python-openxml/python-docx
 

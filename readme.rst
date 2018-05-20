@@ -13,7 +13,14 @@ Also not tested for other text file formats. It might work.
 
 Installation
 ------------
-For the moment it only works with a python installation:
+For the moment it only works with a python installation.
+
+Requirements:
+
+- Python
+- LibreOffice
+
+Installation Steps:
 
 - Clone the repository, go to project folder (where ``setup.py`` is) and install with ``pip install .``
 - Create a environment variable called ``LIBREOFFICE_PROGRAM`` with the path to LibreOffice folder where ``soffice`` and ``python`` executables are present.

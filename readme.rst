@@ -1,6 +1,7 @@
 LibreOfficeToPDF
 ================
 This is a very simple utility that uses LibreOffice to do two things:
+
 - Update the TOC of a given ``docx`` file (especially useful when creating ``docx`` files using `python-docx`_ library)
 - Generate a PDF
 

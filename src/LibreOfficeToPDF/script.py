@@ -3,14 +3,24 @@ import socket
 import uno
 import sys
 import os
+import subprocess
 import time
 import atexit
 
+
+print("Executing LibreOffice python script using LO python")
 OPENOFFICE_PORT = 8100 # 2002
 
 OPENOFFICE_PATH    = os.environ["LIBREOFFICE_PROGRAM"]
 OPENOFFICE_BIN     = os.path.join(OPENOFFICE_PATH, 'soffice')
+print("LibreOffice path: {}".format(OPENOFFICE_PATH))
+print("LibreOffice bin: {}".format(OPENOFFICE_BIN))
 
+NoConnectException = uno.getClass("com.sun.star.connection.NoConnectException")
+PropertyValue = uno.getClass("com.sun.star.beans.PropertyValue")
+
+
+# Adapted from: https://www.linuxjournal.com/content/starting-stopping-and-connecting-openoffice-python
 class OORunner:
     """
     Start, stop, and connect to OpenOffice.
@@ -25,6 +35,7 @@ class OORunner:
         Connect to OpenOffice.
         If a connection cannot be established try to start OpenOffice.
         """
+        print("Connecting to LibreOffice at port {}".format(self.port))
         localContext = uno.getComponentContext()
         resolver     = localContext.ServiceManager.createInstanceWithContext("com.sun.star.bridge.UnoUrlResolver", localContext)
         context      = None
@@ -40,6 +51,7 @@ class OORunner:
 
             # If first connect failed then try starting OpenOffice.
             if n == 0:
+                print("Failed to connect. Try to start LibreOffice instance.")
                 # Exit loop if startup not desired.
                 if no_startup:
                      break
@@ -54,6 +66,7 @@ class OORunner:
             raise Exception("Failed to connect to LibreOffice on port %d" % self.port)
 
         desktop = context.ServiceManager.createInstanceWithContext("com.sun.star.frame.Desktop", context)
+        dispatcher = context.ServiceManager.createInstanceWithContext("com.sun.star.frame.DispatchHelper", context)
 
         if not desktop:
             raise Exception("Failed to create OpenOffice desktop on port %d" % self.port)
@@ -61,15 +74,16 @@ class OORunner:
         if did_start:
             _started_desktops[self.port] = desktop
 
-        return desktop
+        return desktop, dispatcher
 
 
     def startup(self):
         """
         Start a headless instance of OpenOffice.
         """
-        args = [OPENOFFICE_BIN,
-                '-accept=socket,host=localhost,port=%d;urp;StarOffice.ServiceManager' % self.port,
+        print("Starting headless LibreOffice")
+        args = [
+                '-accept=socket,host=localhost,port=%d;urp;' % self.port,
                 '-norestore',
                 '-nofirststartwizard',
                 '-nologo',
@@ -77,20 +91,25 @@ class OORunner:
                 ]
 
         try:
-            pid = os.spawnve(os.P_NOWAIT, args[0], args, env)
+            #pid = os.spawnve(os.P_NOWAIT, args[0], args)
+            pid = subprocess.Popen([OPENOFFICE_BIN, args]).pid
         except Exception as e:
             raise Exception("Failed to start OpenOffice on port %d: %s" % (self.port, e.message))
 
         if pid <= 0:
             raise Exception("Failed to start OpenOffice on port %d" % self.port)
 
+        print("LibreOffice started")
+
 
     def shutdown(self):
         """
         Shutdown OpenOffice.
         """
+        print("Shutting down LibreOffice")
         try:
             if _started_desktops.get(self.port):
+                print("Terminating instance at port {}".format(self.port))
                 _started_desktops[self.port].terminate()
                 del _started_desktops[self.port]
         except Exception as e:
@@ -102,6 +121,7 @@ _started_desktops = {}
 def _shutdown_desktops():
     """ Shutdown all OpenOffice desktops that were started by the program. """
     for port, desktop in _started_desktops.items():
+        print("Exit: Found instance found at port {}. Terminating...".format(port))
         try:
             if desktop:
                 desktop.terminate()
@@ -124,28 +144,54 @@ def oo_shutdown_if_running(port=OPENOFFICE_PORT):
 
 def run(source, update_and_save=True, pdf=True):
     fileUrl = uno.systemPathToFileUrl(os.path.realpath(source))
+    filepath, ext = os.path.splitext(source)
+    fileUrlPDF = uno.systemPathToFileUrl(os.path.realpath(filepath+".pdf"))
+    print("source file: {}".format(fileUrl))
 
-    localContext = uno.getComponentContext()
-    resolver = localContext.ServiceManager.createInstanceWithContext("com.sun.star.bridge.UnoUrlResolver", localContext)
-    ctx = resolver.resolve( "uno:socket,host=localhost,port=2002;urp;StarOffice.ComponentContext" )
-    smgr = ctx.ServiceManager
-    desktop = smgr.createInstanceWithContext("com.sun.star.frame.Desktop",ctx)
+    runner = OORunner(2002)
+    desktop, dispatcher = runner.connect()
+
+    print("Loading document")
     document = desktop.loadComponentFromURL(fileUrl, "_default", 0, ())
-
-    model = desktop.getCurrentComponent()
-    dispatcher = smgr.createInstanceWithContext( "com.sun.star.frame.DispatchHelper", ctx)
-    doc = model.getCurrentController()
+    doc = desktop.getCurrentComponent().getCurrentController()
 
     if update_and_save:
+        print("Updating Indexes and Saving")
         dispatcher.executeDispatch(doc, ".uno:UpdateAllIndexes", "", 0, ())
         struct = uno.createUnoStruct('com.sun.star.beans.PropertyValue')
         struct.Name = 'URL'
-        struct.Value = 'file:///{}'.format(source.replace("\\","/").replace("report","report2"))
+        struct.Value = fileUrl
         dispatcher.executeDispatch(doc, ".uno:SaveAs", "", 0, tuple([struct]))
 
     if pdf:
-        pass
+        print("Generating PDF")
+        struct = uno.createUnoStruct('com.sun.star.beans.PropertyValue')
+        struct.Name = 'URL'
+        struct.Value = fileUrlPDF
+        struct2 = uno.createUnoStruct('com.sun.star.beans.PropertyValue')
+        struct2.Name = "FilterName"
+        struct2.Value = "writer_pdf_Export"
+        dispatcher.executeDispatch(doc, ".uno:ExportDirectToPDF", "", 0, tuple([struct, struct2]))
 
+    runner.shutdown()
+
+
+def main():
+    try:
+        source = sys.argv[1]
+    except IndexError:
+        print("Mising document path.")
+        return
+    try:
+        update_and_save = bool(sys.argv[2])
+    except IndexError:
+        update_and_save = True
+    try:
+        pdf = bool(sys.argv[3])
+    except IndexError:
+        pdf = True
+    run(source, update_and_save, pdf)
 
 if __name__ == "__main__":
-    run(sys.argv[1], sys.argv[2], sys.argv[3])
+    main()
+

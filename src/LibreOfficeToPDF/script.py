@@ -82,17 +82,9 @@ class OORunner:
         Start a headless instance of OpenOffice.
         """
         print("Starting headless LibreOffice")
-        args = [
-                '--norestore',
-                '--nofirststartwizard',
-                '--nologo',
-                '--headless',
-                '--invisible',
-                '--accept=socket,host=localhost,port=%d;urp;' % self.port,
-                ]
 
         try:
-            pid = subprocess.Popen([OPENOFFICE_BIN, *args]).pid
+            pid = subprocess.Popen([OPENOFFICE_BIN, '--norestore', '--nofirststartwizard', '--nologo', '--headless', '--invisible', '--accept=socket,host=localhost,port=%d;urp;' % self.port]).pid
         except Exception as e:
             raise Exception("Failed to start OpenOffice on port %d: %s" % (self.port, e.message))
 

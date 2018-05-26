@@ -8,13 +8,11 @@ import time
 import atexit
 
 
-print("Executing LibreOffice python script using LO python")
+print("Executing LibreOffice python script using LibreOffice python")
 OPENOFFICE_PORT = 8100 # 2002
 
 OPENOFFICE_PATH    = os.environ["LIBREOFFICE_PROGRAM"]
 OPENOFFICE_BIN     = os.path.join(OPENOFFICE_PATH, 'soffice')
-print("LibreOffice path: {}".format(OPENOFFICE_PATH))
-print("LibreOffice bin: {}".format(OPENOFFICE_BIN))
 
 NoConnectException = uno.getClass("com.sun.star.connection.NoConnectException")
 PropertyValue = uno.getClass("com.sun.star.beans.PropertyValue")
@@ -51,7 +49,7 @@ class OORunner:
 
             # If first connect failed then try starting OpenOffice.
             if n == 0:
-                print("Failed to connect. Try to start LibreOffice instance.")
+                print("Failed to connect. Trying to start LibreOffice instance.")
                 # Exit loop if startup not desired.
                 if no_startup:
                      break
@@ -138,7 +136,6 @@ def run(source, update, pdf):
     fileUrl = uno.systemPathToFileUrl(os.path.realpath(source))
     filepath, ext = os.path.splitext(source)
     fileUrlPDF = uno.systemPathToFileUrl(os.path.realpath(filepath+".pdf"))
-    print("source file: {}".format(fileUrl))
 
     runner = OORunner(2002)
     desktop, dispatcher = runner.connect()

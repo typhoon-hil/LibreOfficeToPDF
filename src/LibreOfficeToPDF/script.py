@@ -1,11 +1,19 @@
 """This script is passed to LibreOffice python interpreter to be executed."""
-import socket
-import uno
 import sys
 import os
+
+
+temp_dir = sys.argv[1]
+if temp_dir in sys.path:
+    index = sys.path.index(temp_dir)
+    sys.path.pop(index) # Remove PyInstaller temporary folder with packed DLLs from path
+
+
 import subprocess
 import time
 import atexit
+import socket
+import uno
 
 
 print("Executing LibreOffice python script using LibreOffice python")
@@ -172,19 +180,19 @@ def run(source, update, pdf):
 def main():
 
     try:
-        source = sys.argv[1]
+        source = sys.argv[2]
     except IndexError:
         print("Mising document path.")
         return
 
     try:
-        update = True if sys.argv[2] == "True" else False
+        update = True if sys.argv[3] == "True" else False
     except IndexError:
         print("Mising update option.")
         return
 
     try:
-        pdf = True if sys.argv[3] == "True" else False
+        pdf = True if sys.argv[4] == "True" else False
     except IndexError:
         print("Mising pdf option.")
         return

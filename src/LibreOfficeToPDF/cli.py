@@ -1,7 +1,8 @@
-from subprocess import check_output
+import subprocess
 import os
 import click
 import sys
+
 
 OPENOFFICE_PATH    = os.environ["LIBREOFFICE_PROGRAM"]
 OPENOFFICE_PYTHON  = os.path.join(OPENOFFICE_PATH, 'python')
@@ -10,9 +11,12 @@ print("LibreOffice path: {}".format(OPENOFFICE_PATH))
 print("LibreOffice python: {}".format(OPENOFFICE_PYTHON))
 
 script_dir = None
-if getattr( sys, 'frozen', False ) :
+frozen = getattr(sys, 'frozen', False)
+meipass = None
+if frozen:
     # running in a bundle
-    script_dir = sys._MEIPASS
+    meipass = sys._MEIPASS
+    script_dir = meipass
 else :
     # running live
     script_dir = os.path.dirname(os.path.realpath(__file__))
@@ -20,6 +24,7 @@ else :
 cwd = os.getcwd()
 print("Current working directory: {}".format(cwd))
 script = os.path.join(script_dir, "script.py")
+
 
 @click.command()
 @click.argument('source')
@@ -30,7 +35,9 @@ def main(source, update, pdf):
     if not os.path.isabs(source):
         source = os.path.join(cwd, source)
     print("Calling LibreOffice python\n")
-    print(check_output(["{}".format(OPENOFFICE_PYTHON), script, source, str(update), str(pdf)], shell=True).decode())
+    proc = subprocess.run([str(OPENOFFICE_PYTHON), script, meipass, source, str(update), str(pdf)], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    print(proc.stdout.decode())
+    sys.exit(proc.returncode)
 
 if __name__ == "__main__":
     main()

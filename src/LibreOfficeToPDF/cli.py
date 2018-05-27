@@ -12,13 +12,13 @@ print("LibreOffice python: {}".format(OPENOFFICE_PYTHON))
 
 script_dir = None
 frozen = getattr(sys, 'frozen', False)
-meipass = None
 if frozen:
     # running in a bundle
     meipass = sys._MEIPASS
     script_dir = meipass
 else :
     # running live
+    meipass = "None" # Needs to be any string
     script_dir = os.path.dirname(os.path.realpath(__file__))
 
 cwd = os.getcwd()

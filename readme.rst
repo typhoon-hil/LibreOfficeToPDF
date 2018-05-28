@@ -13,21 +13,30 @@ Also not tested for other text file formats. It might work.
 
 Installation
 ------------
-For the moment it only works with a python installation.
 
-Requirements:
-
-- Python
-- LibreOffice
-
-Installation Steps:
-
-- Install directly from this git repository with ``pip install git+https://github.com/typhoon-hil/LibreOfficeToPDF.git``
+- Install LibreOffice
 - Create a environment variable called ``LIBREOFFICE_PROGRAM`` with the path to LibreOffice folder where ``soffice`` and ``python`` executables are present.
+
+Then use one of the two methods to use LibreOfficeToPDF:
+
+Downloading and using the binaries directly
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+We publish windows standalone executable files. With them you can use it without having to install anything else (no python, etc..).
+
+You can download them at: https://github.com/typhoon-hil/LibreOfficeToPDF/releases
+
+Then you can use the executable directly (possibly adding it a folder added to PATH).
+
+Using with Python
+^^^^^^^^^^^^^^^^^
+- Install directly from this git repository with ``pip install git+https://github.com/typhoon-hil/LibreOfficeToPDF.git``
+
+The executable file will be present in `Python\Scripts` folder, make sure it is on your PATH.
 
 Usage
 -----
-If your python and scripts folder are in path, then you can access from the command line directly.
+
+If your binary (or python and scripts folder) are in path, then you can access from the command line directly.
 
 Typical usage (opens file, updates indexes, saves, generates pdf):
 ``LibreOfficeToPDF C:\Users\john\file.docx``

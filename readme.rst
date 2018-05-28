@@ -22,10 +22,8 @@ Requirements:
 
 Installation Steps:
 
-- Clone the repository, go to project folder (where ``setup.py`` is) and install with ``pip install .``
+- Install directly from this git repository with ``pip install git+https://github.com/typhoon-hil/LibreOfficeToPDF.git``
 - Create a environment variable called ``LIBREOFFICE_PROGRAM`` with the path to LibreOffice folder where ``soffice`` and ``python`` executables are present.
-
-A binary executable file independent of python is being worked on, stay tuned.
 
 Usage
 -----

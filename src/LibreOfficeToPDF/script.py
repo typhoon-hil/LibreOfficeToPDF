@@ -156,10 +156,22 @@ def run(source, update, pdf):
     if update:
         print("Updating Indexes and Saving")
         dispatcher.executeDispatch(doc, ".uno:UpdateAllIndexes", "", 0, ())
+
+        # Saving
+        opts = []
+
+        if ext == ".docx":
+            struct = uno.createUnoStruct('com.sun.star.beans.PropertyValue')
+            struct.Name = "FilterName"
+            struct.Value = "MS Word 2007 XML"
+            opts.append(struct)
+
         struct = uno.createUnoStruct('com.sun.star.beans.PropertyValue')
         struct.Name = 'URL'
         struct.Value = fileUrl
-        dispatcher.executeDispatch(doc, ".uno:SaveAs", "", 0, tuple([struct]))
+        opts.append(struct)
+
+        dispatcher.executeDispatch(doc, ".uno:SaveAs", "", 0, tuple(opts))
 
     if pdf:
         print("Generating PDF")
@@ -185,7 +197,6 @@ def main():
                         help='Do not generate a PDF file with same name as source')
 
     args = parser.parse_args()
-    print(args)
     run(args.source, args.update, args.pdf)
 
 

@@ -5,30 +5,24 @@ This is a very simple utility that uses LibreOffice to do two things:
 - Update the TOC of a given ``docx`` file (especially useful when creating ``docx`` files using `python-docx`_ library)
 - Generate a PDF
 
-So far tested only in Windows 10 using Python 3.6, but it should work on other platforms and Python versions as well. Users are more than welcome to test it.
-
-Also not tested for other text file formats. It might work.
+Not tested for other text file formats, although itt might work.
 
 .. _python-docx: https://github.com/python-openxml/python-docx
 
 Installation
 ------------
-For the moment it only works with a python installation.
-
 Requirements:
 
-- Python
-- LibreOffice
+- LibreOffice (it might also work on OpenOffice)
 
 Installation Steps:
 
-- Install directly from this git repository with ``pip install git+https://github.com/typhoon-hil/LibreOfficeToPDF.git``
+- Unpack LibreOfficeToPDF folder to anywhere in your system
+- Add the LibreOfficeToPDF folder to your PATH.
 - Create a environment variable called ``LIBREOFFICE_PROGRAM`` with the path to LibreOffice folder where ``soffice`` and ``python`` executables are present.
 
 Usage
 -----
-If your python and scripts folder are in path, then you can access from the command line directly.
-
 Typical usage (opens file, updates indexes, saves, generates pdf):
 ``LibreOfficeToPDF C:\Users\john\file.docx``
 

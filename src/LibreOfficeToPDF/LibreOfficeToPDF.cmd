@@ -1,0 +1,9 @@
+@ECHO OFF
+IF "%LIBREOFFICE_PROGRAM%" == "" GOTO NOPATH
+:YESPATH
+"%LIBREOFFICE_PROGRAM%\python.exe" "%~dp0\script.py" %*
+GOTO END
+:NOPATH
+@ECHO The LIBREOFFICE_PROGRAM environment variable was NOT detected.
+GOTO END
+:END

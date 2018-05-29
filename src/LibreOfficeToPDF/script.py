@@ -12,8 +12,11 @@ import argparse
 print("Executing LibreOffice python script using LibreOffice python")
 OPENOFFICE_PORT = 8100 # 2002
 
-OPENOFFICE_PATH    = os.environ["LIBREOFFICE_PROGRAM"]
-OPENOFFICE_BIN     = os.path.join(OPENOFFICE_PATH, 'soffice')
+if os.name == 'nt':
+    OPENOFFICE_PATH    = os.environ["LIBREOFFICE_PROGRAM"]
+    OPENOFFICE_BIN     = os.path.join(OPENOFFICE_PATH, 'soffice')
+else:
+    OPENOFFICE_BIN     = "soffice"
 
 NoConnectException = uno.getClass("com.sun.star.connection.NoConnectException")
 PropertyValue = uno.getClass("com.sun.star.beans.PropertyValue")

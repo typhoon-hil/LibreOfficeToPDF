@@ -1,0 +1,2 @@
+: "${LIBREOFFICE_PROGRAM?The LIBREOFFICE_PRORGAM environment variable was NOT detected.}"
+$LIBREOFFICE_PROGRAM/python dirname "$0"/script.py "$@"

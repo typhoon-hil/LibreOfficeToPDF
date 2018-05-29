@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 Nothing
 
+## [1.0.1] - 2018-05-29
+### Fixes
+- Corruption of docx files when updating indexes and saving (issue #4).
+
 ## [1.0.0] - 2018-05-29
 ### Changed
 - Now this application does not need a dedicated python script to run, instead replaced with batch/shell files.

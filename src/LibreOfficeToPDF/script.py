@@ -1,26 +1,23 @@
 """This script is passed to LibreOffice python interpreter to be executed."""
 import sys
 import os
-
-
-temp_dir = sys.argv[1]
-if temp_dir in sys.path:
-    index = sys.path.index(temp_dir)
-    sys.path.pop(index) # Remove PyInstaller temporary folder with packed DLLs from path
-
-
+import platform
 import subprocess
 import time
 import atexit
 import socket
 import uno
+import argparse
 
 
 print("Executing LibreOffice python script using LibreOffice python")
 OPENOFFICE_PORT = 8100 # 2002
 
-OPENOFFICE_PATH    = os.environ["LIBREOFFICE_PROGRAM"]
-OPENOFFICE_BIN     = os.path.join(OPENOFFICE_PATH, 'soffice')
+if 'Linux' in platform.system():
+    OPENOFFICE_BIN     = "soffice"
+else:
+    OPENOFFICE_PATH    = os.environ["LIBREOFFICE_PROGRAM"]
+    OPENOFFICE_BIN     = os.path.join(OPENOFFICE_PATH, 'soffice')
 
 NoConnectException = uno.getClass("com.sun.star.connection.NoConnectException")
 PropertyValue = uno.getClass("com.sun.star.beans.PropertyValue")
@@ -75,7 +72,7 @@ class OORunner:
         dispatcher = context.ServiceManager.createInstanceWithContext("com.sun.star.frame.DispatchHelper", context)
 
         if not desktop:
-            raise Exception("Failed to create OpenOffice desktop on port %d" % self.port)
+            raise Exception("Failed to create LibreOffice desktop on port %d" % self.port)
 
         if did_start:
             _started_desktops[self.port] = desktop
@@ -92,10 +89,10 @@ class OORunner:
         try:
             pid = subprocess.Popen([OPENOFFICE_BIN, '--norestore', '--nofirststartwizard', '--nologo', '--headless', '--invisible', '--accept=socket,host=localhost,port=%d;urp;' % self.port]).pid
         except Exception as e:
-            raise Exception("Failed to start OpenOffice on port %d: %s" % (self.port, e.message))
+            raise Exception("Failed to start LibreOffice on port %d: %s" % (self.port, e.message))
 
         if pid <= 0:
-            raise Exception("Failed to start OpenOffice on port %d" % self.port)
+            raise Exception("Failed to start LibreOffice on port %d" % self.port)
 
         print("LibreOffice started")
 
@@ -179,25 +176,17 @@ def run(source, update, pdf):
 
 def main():
 
-    try:
-        source = sys.argv[2]
-    except IndexError:
-        print("Mising document path.")
-        return
+    parser = argparse.ArgumentParser(description='Run LibreOffice to update indexes in a document and convert to PDF')
+    parser.add_argument('source', metavar='DOC_PATH',
+                        help='Path to the source document file to be converted')
+    parser.add_argument('--no-update', dest='update', action='store_false',
+                        help="Do not update indexes (e.g. Table of Contents) on the source file and save it")
+    parser.add_argument('--no-pdf', dest='pdf', action='store_false',
+                        help='Do not generate a PDF file with same name as source')
 
-    try:
-        update = True if sys.argv[3] == "True" else False
-    except IndexError:
-        print("Mising update option.")
-        return
-
-    try:
-        pdf = True if sys.argv[4] == "True" else False
-    except IndexError:
-        print("Mising pdf option.")
-        return
-
-    run(source, update, pdf)
+    args = parser.parse_args()
+    print(args)
+    run(args.source, args.update, args.pdf)
 
 
 if __name__ == "__main__":

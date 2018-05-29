@@ -17,10 +17,12 @@ Requirements:
 
 Installation Steps
 
-- (Windows/Mac OS X only) Create a environment variable called ``LIBREOFFICE_PROGRAM`` with the path to LibreOffice folder where ``soffice`` and ``python`` executables are present.
 - Unpack LibreOfficeToPDF folder to anywhere in your system
 - Add the LibreOfficeToPDF folder to your PATH.
 
+Windows/Mac OS X only:
+
+- Create a environment variable called ``LIBREOFFICE_PROGRAM`` with the path to LibreOffice folder where ``soffice`` and ``python`` executables are present.
 
 Usage
 -----

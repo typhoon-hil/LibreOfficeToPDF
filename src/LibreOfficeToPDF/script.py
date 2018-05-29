@@ -1,19 +1,12 @@
 """This script is passed to LibreOffice python interpreter to be executed."""
 import sys
 import os
-
-
-temp_dir = sys.argv[1]
-if temp_dir in sys.path:
-    index = sys.path.index(temp_dir)
-    sys.path.pop(index) # Remove PyInstaller temporary folder with packed DLLs from path
-
-
 import subprocess
 import time
 import atexit
 import socket
 import uno
+import argparse
 
 
 print("Executing LibreOffice python script using LibreOffice python")
@@ -179,25 +172,17 @@ def run(source, update, pdf):
 
 def main():
 
-    try:
-        source = sys.argv[2]
-    except IndexError:
-        print("Mising document path.")
-        return
+    parser = argparse.ArgumentParser(description='Run LibreOffice to update indexes in a document and convert to PDF')
+    parser.add_argument('source', metavar='DOC_PATH',
+                        help='Path to the source document file to be converted')
+    parser.add_argument('--no-update', dest='update', action='store_false',
+                        help="Do not update indexes (e.g. Table of Contents) on the source file and save it")
+    parser.add_argument('--no-pdf', dest='pdf', action='store_false',
+                        help='Do not generate a PDF file with same name as source')
 
-    try:
-        update = True if sys.argv[3] == "True" else False
-    except IndexError:
-        print("Mising update option.")
-        return
-
-    try:
-        pdf = True if sys.argv[4] == "True" else False
-    except IndexError:
-        print("Mising pdf option.")
-        return
-
-    run(source, update, pdf)
+    args = parser.parse_args()
+    print(args)
+    run(args.source, args.update, args.pdf)
 
 
 if __name__ == "__main__":

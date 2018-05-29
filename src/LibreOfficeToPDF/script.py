@@ -1,6 +1,7 @@
 """This script is passed to LibreOffice python interpreter to be executed."""
 import sys
 import os
+import platform
 import subprocess
 import time
 import atexit
@@ -12,11 +13,11 @@ import argparse
 print("Executing LibreOffice python script using LibreOffice python")
 OPENOFFICE_PORT = 8100 # 2002
 
-if os.name == 'nt':
+if 'Linux' in platform.system():
+    OPENOFFICE_BIN     = "soffice"
+else:
     OPENOFFICE_PATH    = os.environ["LIBREOFFICE_PROGRAM"]
     OPENOFFICE_BIN     = os.path.join(OPENOFFICE_PATH, 'soffice')
-else:
-    OPENOFFICE_BIN     = "soffice"
 
 NoConnectException = uno.getClass("com.sun.star.connection.NoConnectException")
 PropertyValue = uno.getClass("com.sun.star.beans.PropertyValue")
@@ -71,7 +72,7 @@ class OORunner:
         dispatcher = context.ServiceManager.createInstanceWithContext("com.sun.star.frame.DispatchHelper", context)
 
         if not desktop:
-            raise Exception("Failed to create OpenOffice desktop on port %d" % self.port)
+            raise Exception("Failed to create LibreOffice desktop on port %d" % self.port)
 
         if did_start:
             _started_desktops[self.port] = desktop
@@ -88,10 +89,10 @@ class OORunner:
         try:
             pid = subprocess.Popen([OPENOFFICE_BIN, '--norestore', '--nofirststartwizard', '--nologo', '--headless', '--invisible', '--accept=socket,host=localhost,port=%d;urp;' % self.port]).pid
         except Exception as e:
-            raise Exception("Failed to start OpenOffice on port %d: %s" % (self.port, e.message))
+            raise Exception("Failed to start LibreOffice on port %d: %s" % (self.port, e.message))
 
         if pid <= 0:
-            raise Exception("Failed to start OpenOffice on port %d" % self.port)
+            raise Exception("Failed to start LibreOffice on port %d" % self.port)
 
         print("LibreOffice started")
 

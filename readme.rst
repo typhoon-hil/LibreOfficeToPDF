@@ -13,7 +13,7 @@ Installation
 ------------
 Requirements:
 
-- LibreOffice (it might also work on OpenOffice)
+- LibreOffice (it might also work on OpenOffice). Tested with LibreOffice version 5, known bugs with version 4, so please update.
 
 Installation Steps
 

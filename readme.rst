@@ -18,7 +18,7 @@ Requirements:
 Installation Steps
 
 - `Download latest release source zip file <https://github.com/typhoon-hil/LibreOfficeToPDF/releases>`_
-- Unpack ``src\LibreOfficeToPDF`` folder to anywhere in your system
+- Unpack the ``LibreOfficeToPDF`` folder (which contains the script files and is located inside ``src`` folder) to anywhere in your system
 - Add the LibreOfficeToPDF folder to your PATH.
 
 Windows/Mac OS X only:
